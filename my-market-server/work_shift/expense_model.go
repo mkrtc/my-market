@@ -1,7 +1,7 @@
 package workshift
 
 type ExpenseModel struct {
-	ID          int `gorm:"primaryKey"`
+	ID          int `gorm:"primaryKey; autoIncrement"`
 	Article     string
 	Debit       float32
 	Credit      float32

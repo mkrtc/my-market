@@ -1,7 +1,6 @@
 package httpprovider
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -11,13 +10,7 @@ import (
 type Client struct {
 	port        string
 	mux         *http.ServeMux
-	controllers map[string][]Controller
-}
-
-type Controller struct {
-	Path    string
-	Method  string
-	Handler func(ctx context.Context, w http.ResponseWriter, r *http.Request)
+	controllers map[string][]IController
 }
 
 type HttpException struct {
@@ -26,18 +19,18 @@ type HttpException struct {
 	Message    string `json:"message"`
 }
 
-func (c *Client) RegisterController(basePath string, controllers ...Controller) {
+func (c *Client) RegisterController(basePath string, controllers ...IController) {
 
 	for _, handle := range controllers {
-		route := fmt.Sprintf("%s%s", basePath, handle.Path)
+		route := fmt.Sprintf("%s%s", basePath, handle.GetPath())
 
 		if _, ok := c.controllers[route]; ok {
 			rt := c.controllers[route]
 
-			if slices.ContainsFunc(rt, func(con Controller) bool {
-				return con.Method == handle.Method
+			if slices.ContainsFunc(rt, func(con IController) bool {
+				return con.GetMethod() == handle.GetMethod()
 			}) {
-				panic(fmt.Sprintf("\033[31m[error] \033[0mduplicate route: [%s] %s%s", handle.Method, basePath, handle.Path))
+				panic(fmt.Sprintf("\033[31m[error] \033[0m duplicate route: [%s] %s%s", handle.GetMethod(), basePath, handle.GetPath()))
 			}
 		}
 
@@ -50,7 +43,7 @@ func NewClient() *Client {
 
 	return &Client{
 		mux:         mux,
-		controllers: make(map[string][]Controller),
+		controllers: make(map[string][]IController),
 	}
 }
 
@@ -70,36 +63,38 @@ func (c *Client) Listen(port string) {
 
 func (c *Client) serve() {
 	if len(c.controllers) == 0 {
-		fmt.Printf("\033[33m[warning] \033[0mno controller registred\n")
+		fmt.Printf("\033[33m[warning] \033[0mno controller registered \n")
 		return
 	}
 	for route, controller := range c.controllers {
-		fmt.Printf("\033[32m[controller] \033[33m[%s] \033[0msuccessfully registred\n", route)
+		fmt.Printf("\033[32m[controller] \033[33m[%s] \033[0m successfully registered \n", route)
 		c.mux.HandleFunc(route, func(w http.ResponseWriter, r *http.Request) {
+			hasRoute := false
+			var ctrl IController
+
 			for _, conn := range controller {
-				if r.Method != conn.Method {
-					w.Header().Set("Content-type", "application/json")
-					exp := HttpException{
-						Status:     "error",
-						StatusCode: http.StatusMethodNotAllowed,
-						Message:    fmt.Sprintf("Method: [%s] %s not allowed", r.Method, r.Pattern),
-					}
-
-					data, err := json.Marshal(exp)
-					if err != nil {
-						w.WriteHeader(http.StatusInternalServerError)
-						w.Header().Set("Content-type", "text/plain")
-						fmt.Fprintf(w, "Internal Server Error")
-						return
-					}
-
-					w.WriteHeader(int(exp.StatusCode))
-					w.Write(data)
-					return
+				if r.Method == conn.GetMethod() {
+					ctrl = conn
+					hasRoute = true
 				}
-				ctx := r.Context()
-				conn.Handler(ctx, w, r)
 			}
+
+			if hasRoute {
+				ctx := r.Context()
+				ctrl.Handle(ctx, w, r)
+				return
+			}
+
+			exp := HttpException{
+				Status:     "error",
+				StatusCode: http.StatusMethodNotAllowed,
+				Message:    fmt.Sprintf("Method: [%s] %s not allowed", r.Method, r.Pattern),
+			}
+
+			data, _ := json.Marshal(exp)
+
+			w.WriteHeader(int(exp.StatusCode))
+			w.Write(data)
 
 		})
 	}
