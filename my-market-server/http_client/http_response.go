@@ -1,4 +1,4 @@
-package httpprovider
+package httpclient
 
 import (
 	"context"
@@ -19,6 +19,8 @@ type HttpResponse[T any] struct {
 	Query          url.Values
 	ctx            context.Context
 	Body           T
+	Error          error
+	HasBody        bool
 }
 
 type Exception struct {
@@ -36,6 +38,7 @@ func NewHttpResponse[T any](rw http.ResponseWriter, rq *http.Request) (HttpRespo
 		ctx:            rq.Context(),
 	}
 	err := resp.setBody()
+	resp.Error = err
 	return resp, err
 }
 
@@ -43,18 +46,23 @@ func (r *HttpResponse[T]) setBody() error {
 	var body T
 	err := json.NewDecoder(r.Request.Body).Decode(&body)
 	if err != nil {
-		return nil
+		r.HasBody = false
+		if err.Error() == "EOF" {
+			return nil
+		}
+		return err
 	}
+	r.HasBody = true
 
 	validate := validator.New()
+
 	err = validate.Struct(body)
 	if err != nil {
 		mess := ""
 		for _, err := range err.(validator.ValidationErrors) {
 			mess += fmt.Sprintf("%s;", err.Error())
 		}
-		r.Exception(http.StatusBadRequest, mess, nil)
-		return err
+		return fmt.Errorf("%s", mess)
 	}
 	r.Body = body
 	return nil

@@ -8,37 +8,16 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewRetailOutletController(db *gorm.DB) []hc.IController {
-	service := *NewRetailOutletService(&RetailOutletRepo{Repo: db})
+func NewSeoController(db *gorm.DB) []hc.IController {
+	service := *NewSeoService(&SeoRepo{Repo: db})
 	return []hc.IController{
-		hc.GenericControllerAdapter[any]{
-			Controller: findAll(service),
-		},
-		hc.GenericControllerAdapter[any]{
-			Controller: findById(service),
-		},
-		hc.GenericControllerAdapter[CreateRetailOutletDto]{
-			Controller: create(service),
-		},
+		hc.GenericControllerAdapter[any]{Controller: findSeoById(service)},
+		hc.GenericControllerAdapter[any]{Controller: findAllSeo(service)},
+		hc.GenericControllerAdapter[CreateSeoDto]{Controller: createSeo(service)},
 	}
 }
 
-func findAll(service RetailOutletService) hc.Controller[any] {
-	return hc.Controller[any]{
-		Path:   "",
-		Method: http.MethodGet,
-		Handler: func(r hc.HttpResponse[any]) {
-			outlets, err := service.FindAll()
-			if err != nil {
-				r.Exception(http.StatusInternalServerError, "internal server error", nil)
-				return
-			}
-			r.SendJson(outlets)
-		},
-	}
-}
-
-func findById(service RetailOutletService) hc.Controller[any] {
+func findSeoById(service SeoService) hc.Controller[any] {
 	return hc.Controller[any]{
 		Path:   "/by-id",
 		Method: http.MethodGet,
@@ -57,6 +36,7 @@ func findById(service RetailOutletService) hc.Controller[any] {
 				r.Exception(http.StatusBadRequest, "Id is required", nil)
 				return
 			}
+
 			model, err := service.FindById(id)
 			if err != nil {
 				r.Exception(http.StatusBadRequest, err.Error(), nil)
@@ -64,16 +44,30 @@ func findById(service RetailOutletService) hc.Controller[any] {
 			}
 
 			r.SendJson(model)
-
 		},
 	}
 }
 
-func create(service RetailOutletService) hc.Controller[CreateRetailOutletDto] {
-	return hc.Controller[CreateRetailOutletDto]{
+func findAllSeo(service SeoService) hc.Controller[any] {
+	return hc.Controller[any]{
+		Path:   "",
+		Method: http.MethodGet,
+		Handler: func(r hc.HttpResponse[any]) {
+			model, err := service.FindAll()
+			if err != nil {
+				r.Exception(http.StatusBadRequest, err.Error(), nil)
+				return
+			}
+			r.SendJson(model)
+		},
+	}
+}
+
+func createSeo(service SeoService) hc.Controller[CreateSeoDto] {
+	return hc.Controller[CreateSeoDto]{
 		Path:   "",
 		Method: http.MethodPost,
-		Handler: func(r hc.HttpResponse[CreateRetailOutletDto]) {
+		Handler: func(r hc.HttpResponse[CreateSeoDto]) {
 			if !r.HasBody {
 				r.Exception(http.StatusBadRequest, "Incorrect body!", nil)
 				return

@@ -1,34 +1,30 @@
-package retailoutlet
+package workshift
 
 import (
 	hc "my-market-server/main/http_client"
+	retailoutlet "my-market-server/main/retail_outlet"
 	"net/http"
 	"strconv"
 
 	"gorm.io/gorm"
 )
 
-func NewRetailOutletController(db *gorm.DB) []hc.IController {
-	service := *NewRetailOutletService(&RetailOutletRepo{Repo: db})
+func NewWorkShiftController(db *gorm.DB) []hc.IController {
+	service := *NewWorkShiftService(WorkShiftRepo{Repo: db}, *retailoutlet.NewRetailOutletService(&retailoutlet.RetailOutletRepo{Repo: db}))
 	return []hc.IController{
-		hc.GenericControllerAdapter[any]{
-			Controller: findAll(service),
-		},
-		hc.GenericControllerAdapter[any]{
-			Controller: findById(service),
-		},
-		hc.GenericControllerAdapter[CreateRetailOutletDto]{
-			Controller: create(service),
-		},
+		hc.GenericControllerAdapter[any]{Controller: findById(service)},
+		hc.GenericControllerAdapter[any]{Controller: findAll(service)},
+		hc.GenericControllerAdapter[CreateWorkShiftDto]{Controller: create(service)},
 	}
 }
 
-func findAll(service RetailOutletService) hc.Controller[any] {
+func findAll(service WorkShiftService) hc.Controller[any] {
 	return hc.Controller[any]{
 		Path:   "",
 		Method: http.MethodGet,
 		Handler: func(r hc.HttpResponse[any]) {
-			outlets, err := service.FindAll()
+
+			outlets, err := service.FindAll(r.Query)
 			if err != nil {
 				r.Exception(http.StatusInternalServerError, "internal server error", nil)
 				return
@@ -38,18 +34,16 @@ func findAll(service RetailOutletService) hc.Controller[any] {
 	}
 }
 
-func findById(service RetailOutletService) hc.Controller[any] {
+func findById(service WorkShiftService) hc.Controller[any] {
 	return hc.Controller[any]{
 		Path:   "/by-id",
 		Method: http.MethodGet,
 		Handler: func(r hc.HttpResponse[any]) {
 			id := 0
-			if i, ok := r.Query["id"]; ok {
-				if len(i) > 0 {
-					value, err := strconv.Atoi(i[0])
-					if err == nil {
-						id = value
-					}
+			if idArr, ok := r.Query["id"]; ok {
+				value, err := strconv.Atoi(idArr[0])
+				if err == nil {
+					id = value
 				}
 			}
 
@@ -69,11 +63,11 @@ func findById(service RetailOutletService) hc.Controller[any] {
 	}
 }
 
-func create(service RetailOutletService) hc.Controller[CreateRetailOutletDto] {
-	return hc.Controller[CreateRetailOutletDto]{
+func create(service WorkShiftService) hc.Controller[CreateWorkShiftDto] {
+	return hc.Controller[CreateWorkShiftDto]{
 		Path:   "",
 		Method: http.MethodPost,
-		Handler: func(r hc.HttpResponse[CreateRetailOutletDto]) {
+		Handler: func(r hc.HttpResponse[CreateWorkShiftDto]) {
 			if !r.HasBody {
 				r.Exception(http.StatusBadRequest, "Incorrect body!", nil)
 				return

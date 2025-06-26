@@ -11,5 +11,5 @@ type RetailOutletModel struct {
 	OpenedDate time.Time `gorm:"column:opened_date" json:"opened_date"`
 	ClosedDate time.Time `gorm:"column:closed_date" json:"closed_date"`
 	SeoId      int       `form:"column:seo_id" json:"seo_id"`
-	Seo        SeoModel  `gorm:"foreignKey:SeoId" json:"seo"`
+	Seo        *SeoModel `gorm:"foreignKey:SeoId" json:"seo"`
 }

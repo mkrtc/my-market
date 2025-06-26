@@ -1,4 +1,4 @@
-package httpprovider
+package httpclient
 
 import (
 	"context"

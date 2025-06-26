@@ -1,4 +1,4 @@
-package httpprovider
+package httpclient
 
 import (
 	"encoding/json"
@@ -81,7 +81,18 @@ func (c *Client) serve() {
 
 			if hasRoute {
 				ctx := r.Context()
-				ctrl.Handle(ctx, w, r)
+				err := ctrl.Handle(ctx, w, r)
+				if err != nil {
+					exp := HttpException{
+						Status:     "error",
+						StatusCode: http.StatusBadRequest,
+						Message:    err.Error(),
+					}
+					data, _ := json.Marshal(exp)
+					w.Header().Set(ct, ContentTypeJson)
+					w.WriteHeader(int(exp.StatusCode))
+					w.Write(data)
+				}
 				return
 			}
 
@@ -92,7 +103,7 @@ func (c *Client) serve() {
 			}
 
 			data, _ := json.Marshal(exp)
-
+			w.Header().Set(ct, ContentTypeJson)
 			w.WriteHeader(int(exp.StatusCode))
 			w.Write(data)
 

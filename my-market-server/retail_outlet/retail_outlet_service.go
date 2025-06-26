@@ -1,30 +1,38 @@
 package retailoutlet
 
 import (
-	retailoutlet_dto "my-market-server/main/retail_outlet/dto"
 	"time"
 )
 
 type RetailOutletService struct {
-	service RetailOutletRepoService
+	repo RetailOutletRepoService
 }
 
-func NewReatilOutletService(s RetailOutletRepoService) *RetailOutletService {
-	return &RetailOutletService{service: s}
+func NewRetailOutletService(repo RetailOutletRepoService) *RetailOutletService {
+	return &RetailOutletService{repo: repo}
 }
 
-func (s *RetailOutletService) Create(dto retailoutlet_dto.CreateRetailOutletDto) RetailOutletModel {
+func (s *RetailOutletService) Create(dto CreateRetailOutletDto) (RetailOutletModel, error) {
 	model := RetailOutletModel{
 		FullName:   dto.FullName,
 		Address:    dto.Address,
 		OpenedDate: time.UnixMilli(dto.OpenedDate),
 		ClosedDate: time.UnixMilli(dto.ClosedDate),
+		SeoId:      int(dto.SeoId),
 	}
-	s.service.Create(&model)
+	err := s.repo.Create(&model)
 
-	return model
+	return model, err
 }
 
-func (s *RetailOutletService) FindAll(model *[]RetailOutletModel) {
-	s.service.FindAll(model)
+func (s *RetailOutletService) FindAll() ([]RetailOutletModel, error) {
+	var model []RetailOutletModel
+	err := s.repo.FindAll(&model)
+	return model, err
+}
+
+func (s *RetailOutletService) FindById(id int) (RetailOutletModel, error) {
+	var model RetailOutletModel
+	err := s.repo.FindOne(id, &model)
+	return model, err
 }
