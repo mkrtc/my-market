@@ -9,22 +9,25 @@ type RetailOutletRepo struct {
 }
 
 type RetailOutletRepoService interface {
-	Create(dto *RetailOutletModel) error
-	FindOne(id int, retailOutlet *RetailOutletModel) error
-	FindAll(retailOutlets *[]RetailOutletModel) error
+	FindAll() ([]RetailOutletModel, error)
+	FindOne(id int) (RetailOutletModel, error)
+	Create(dto RetailOutletModel) (RetailOutletModel, error)
 }
 
-func (r *RetailOutletRepo) Create(dto *RetailOutletModel) error {
-	result := r.Repo.Create(&dto)
-	return result.Error
+func (r *RetailOutletRepo) Create(dto RetailOutletModel) (RetailOutletModel, error) {
+	model := dto
+	res := r.Repo.Create(&model)
+	return model, res.Error
 }
 
-func (r *RetailOutletRepo) FindOne(id int, retailOutlet *RetailOutletModel) error {
-	result := r.Repo.Where("id = ?", id).First(&retailOutlet)
-	return result.Error
+func (r *RetailOutletRepo) FindOne(id int) (RetailOutletModel, error) {
+	var model RetailOutletModel
+	res := r.Repo.Where("id = ?", id).First(&model)
+	return model, res.Error
 }
 
-func (r *RetailOutletRepo) FindAll(retailOutlets *[]RetailOutletModel) error {
-	result := r.Repo.Find(&retailOutlets)
-	return result.Error
+func (r *RetailOutletRepo) FindAll() ([]RetailOutletModel, error) {
+	var model []RetailOutletModel
+	res := r.Repo.Find(&model)
+	return model, res.Error
 }

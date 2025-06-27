@@ -1,0 +1,11 @@
+
+.seo{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px;
+}
+
+.seo_table{
+    width: 80%;
+}

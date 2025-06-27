@@ -2,9 +2,9 @@ package main
 
 import (
 	"my-market-server/main/database"
-	httpprovider "my-market-server/main/http_provider"
-	retailoutlet "my-market-server/main/retail_outlet"
-	workshift "my-market-server/main/work_shift"
+	hc "my-market-server/main/http_client"
+	rt "my-market-server/main/retail_outlet"
+	ws "my-market-server/main/work_shift"
 	"os"
 
 	"github.com/joho/godotenv"
@@ -15,17 +15,19 @@ func main() {
 	db := database.Init()
 
 	db.AutoMigrate(
-		&workshift.WorkShiftModel{}, &workshift.CardTransferModel{}, &workshift.ExpenseModel{},
-		&retailoutlet.RetailOutletModel{}, &retailoutlet.SeoModel{},
+		&ws.WorkShiftModel{}, &ws.CardTransferModel{}, &ws.ExpenseModel{},
+		&rt.RetailOutletModel{}, &rt.SeoModel{},
 	)
 
-	httpClient := httpprovider.NewClient()
+	httpClient := hc.NewClient()
 
-	httpClient.RegisterController("/reatil-outlet", retailoutlet.Controller(db)...)
+	httpClient.RegisterController("/retail-outlet", rt.NewRetailOutletController(db)...)
+	httpClient.RegisterController("/seo", rt.NewSeoController(db)...)
+	httpClient.RegisterController("/work-shift", ws.NewWorkShiftController(db)...)
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		panic("Port is not definde")
+		panic("Port is not defined")
 	}
 
 	httpClient.Listen(port)
