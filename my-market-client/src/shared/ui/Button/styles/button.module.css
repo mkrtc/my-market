@@ -1,0 +1,39 @@
+
+.button{
+    padding: 5px 3px;
+    outline: 1px solid;
+    border-radius: 5px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    transition: .3s;
+}
+
+.button_danger{
+    outline-color: red;
+    &:hover{
+        color: white;
+        background-color: red;
+    }
+}
+
+.button_success{
+    outline-color: #00dd00;
+    &:hover{
+        color: white;
+        background-color: #00dd00;
+    }
+}
+
+.button_primary{
+    outline-color: blue;
+    &:hover{
+        color: white;
+        background-color: blue;
+    }
+}
+
+.button_disabled{
+    outline-color: gray;
+    pointer-events: none;
+}

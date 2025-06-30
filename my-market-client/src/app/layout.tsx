@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import "@/styles/reset.css"
+import { LayoutComponent } from "@/components";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -13,7 +14,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <LayoutComponent>
+          {children}
+        </LayoutComponent>
+      </body>
     </html>
   );
 }

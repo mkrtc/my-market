@@ -23,6 +23,7 @@
       "@/repositories": ["./src/repositories"],
       "@/entities": ["./src/entities"],
       "@/components": ["./src/components"],
+      "@/shared": ["./src/shared"],
       "@/styles/*": ["./src/styles/*"],
     }
   },

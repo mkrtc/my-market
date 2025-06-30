@@ -1,0 +1,23 @@
+
+.header{
+    width: 100%;
+    display: flex;
+    border-bottom: 1px solid #c0c0c0;
+    padding: 10px 0;
+}
+
+.header_nav{
+    text-decoration: none;
+    margin-left: 10px;
+    color: gray;
+    transition: color .3s;
+
+    &:hover{
+        color: black;
+    }
+}
+
+.header_nav-active{
+    color: black;
+    pointer-events: none;
+}

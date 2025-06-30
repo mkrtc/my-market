@@ -3,6 +3,7 @@ import { FC, useEffect, useMemo, useState } from "react";
 import { SeoService } from "./services/seo.service";
 import { SeoEntity } from "@/entities";
 import styles from "./styles/seo.module.css";
+import { Button, Input, Modal, Table, TableRow } from "@/shared";
 
 export const SeoComponent:FC = () => {
     const service = useMemo(() => new SeoService, []);
@@ -11,7 +12,6 @@ export const SeoComponent:FC = () => {
     useEffect(() => {
         (async () => {
             const s = await service.getSeo();
-            console.log("ue", s)
             if(s instanceof Error){
                 setError(() => s.message);
             }else{
@@ -19,31 +19,27 @@ export const SeoComponent:FC = () => {
             }
         })()
     }, [])
-
-    console.log(seo)
     return (
         <div className={styles.seo}>
             {error && <span>{error}</span>}
-            <table className={styles.seo_table}>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Наименование</th>
-                        <th>Полное наименование</th>
-                        <th>Организация</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {seo.map(s => (
-                        <tr key={s.id}>
-                            <td>{s.id}</td>
-                            <td>{s.fullName}</td>
-                            <td>{s.shortName}</td>
-                            <td>{s.orgName}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <div>
+                <Button>Добавить SEO</Button>
+            </div>
+            <Modal open>
+                <form>
+                    <Input />
+                </form>
+            </Modal>
+            <Table cols={["ID", "Наименование", "Полное наименование", "Организация"]}>
+                {seo.map(s => (
+                    <TableRow key={s.id} values={[
+                        {key: s.id, value: s.id},
+                        {key: s.fullName, value: s.fullName},
+                        {key: s.shortName, value: s.shortName},
+                        {key: s.orgName, value: s.orgName},
+                    ]}/>
+                ))}
+            </Table>
         </div>
     )
 }
