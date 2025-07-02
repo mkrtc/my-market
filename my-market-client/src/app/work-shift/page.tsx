@@ -1,8 +1,9 @@
+import { WorkShiftComponent } from "@/components";
 import { NextPage } from "next";
 
 
 const WorkShiftPage: NextPage = () => {
-    return <div></div>
+    return <WorkShiftComponent />
 }
 
 export default WorkShiftPage;

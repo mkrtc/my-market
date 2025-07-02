@@ -24,12 +24,16 @@ func (r *WorkShiftRepo) FindAll(limit int, order string) ([]WorkShiftModel, erro
 
 func (r *WorkShiftRepo) FindById(id int) (WorkShiftModel, error) {
 	var model WorkShiftModel
-	res := r.Repo.Where("id = ?", id).First(&model)
+	res := r.Repo.Where("id = ?", id).Preload("Expenses").Preload("CardTransfers").First(&model)
 	return model, res.Error
 }
 
 func (r *WorkShiftRepo) Create(dto WorkShiftModel) (WorkShiftModel, error) {
 	model := dto
 	res := r.Repo.Create(&model)
-	return model, res.Error
+	if res.Error != nil {
+		return model, res.Error
+	}
+	model, err := r.FindById(model.ID)
+	return model, err
 }

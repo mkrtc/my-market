@@ -1,6 +1,6 @@
 "use client"
 import { usePathname } from "next/navigation";
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { LayoutService, Path } from "./services/layout.service";
 import Link from "next/link";
 import styles from "./styles/layout.module.css";
@@ -11,16 +11,13 @@ interface LayoutComponentProps{
 }
 
 export const LayoutComponent:FC<LayoutComponentProps> = ({children}) => {
-    console.log(1)
     const pathname = usePathname();
     const [paths, setPaths] = useState<Path[]>([]);
-    console.log(2, paths)
     
     useEffect(() => {
         setPaths(() => LayoutService.getPaths(pathname));
     }, [pathname])
     
-    console.log(3, paths)
     return (
         <>
             <header className={styles.header}>

@@ -9,9 +9,9 @@ export class RetailOutletRepository{
         private readonly httpProvider: HttpProvider
     ){}
 
-    public async find(): Promise<RetailOutletEntity> {
-        const ro = await this.httpProvider.get<IRetailOutletEntity>(HTTP_CONFIG.paths.retailOutlet.findAll);
-        return new RetailOutletEntity(ro);
+    public async find(): Promise<RetailOutletEntity[]> {
+        const ro = await this.httpProvider.get<IRetailOutletEntity[]>(HTTP_CONFIG.paths.retailOutlet.findAll);
+        return ro.map(r => new RetailOutletEntity(r));
     }
 
     public async findById(id: number){

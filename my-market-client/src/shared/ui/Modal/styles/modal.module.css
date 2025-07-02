@@ -15,9 +15,30 @@
     display: none;
 }
 
+.modal_header{
+    margin-bottom: 10px;
+    border-bottom: 1px solid gray;
+    display: flex;
+    justify-content: flex-start;
+    padding-bottom: 10px;
+    padding-top: 5px;
+}
+
 .modal_body{
-    padding: 5px;
+    min-width: 300px;
+    padding: 10px;
     border-radius: 5px;
     box-shadow: 0px 0px 3px gray;
     background-color: white;
+    max-height: 80%;
+    overflow: auto;
+}
+
+.modal_footer{
+    margin-top: 10px;
+    border-top: 1px solid gray;
+    display: flex;
+    justify-content: flex-end;
+    padding-top: 10px;
+    padding-bottom: 5px;
 }

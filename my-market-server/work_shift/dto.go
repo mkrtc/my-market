@@ -5,6 +5,7 @@ type CreateWorkShiftDto struct {
 	Cashless       float32                          `json:"cashLess" validate:"gte=0"`
 	CashRegister   float32                          `json:"cashRegister" validate:"gte=0"`
 	RetailOutletId int                              `json:"retailOutletId" validate:"gte=0"`
+	Date           int64                            `json:"date" validate:"gte=0"`
 	CardTransfers  *[]float32                       `json:"cardTransfers" validate:"omitempty,dive,gte=0"`
 	Expenses       *[]CreateExpenseWithWorkShiftDto `json:"expenses" validate:"omitempty,dive"`
 }

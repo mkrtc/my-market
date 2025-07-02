@@ -54,6 +54,7 @@ func (s *WorkShiftService) Create(dto CreateWorkShiftDto) (WorkShiftModel, error
 		Cashless:       dto.Cashless,
 		CashRegister:   dto.CashRegister,
 		RetailOutletId: dto.RetailOutletId,
+		Date:           time.UnixMilli(dto.Date),
 	}
 
 	if dto.CardTransfers != nil {

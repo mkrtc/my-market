@@ -10,9 +10,9 @@ export const HTTP_CONFIG = {
             create: "/work-shift",
         },
         retailOutlet: {
-            findAll: "/retail-outlets",
-            findById: "/retail-outlets/by-id",
-            create: "/retail-outlets",
+            findAll: "/retail-outlet",
+            findById: "/retail-outlet/by-id",
+            create: "/retail-outlet",
         },
         seo: {
             findAll: "/seo",

@@ -7,6 +7,7 @@ export interface Create{
     retailOutletId: number;
     cardTransfers: number[];
     expenses: CreateExpense[];
+    date: number;
 }
 
 interface CreateExpense{

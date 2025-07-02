@@ -6,7 +6,7 @@ export interface IRetailOutletEntity{
     full_name: string;
     address: string;
     opened_date: string;
-    closed_date: string;
+    closed_date: string | null;
     seo_id: number;
     seo: ISeoEntity | null;
 }
@@ -16,7 +16,7 @@ export class RetailOutletEntity{
     private _fullName: string;
     private _address: string;
     private _openedDate: Date;
-    private _closedDate: Date;
+    private _closedDate: Date | null;
     private _seoId: number;
     private _seo: SeoEntity | null;
 
@@ -25,7 +25,7 @@ export class RetailOutletEntity{
         this._fullName = entity.full_name;
         this._address = entity.address;
         this._openedDate = new Date(entity.opened_date);
-        this._closedDate = new Date(entity.closed_date)
+        this._closedDate = entity.closed_date && !entity.closed_date.startsWith("1970") ? new Date(entity.closed_date) : null;
         this._seoId = entity.seo_id;
         this._seo = entity.seo ? new SeoEntity(entity.seo) : null;
     }
